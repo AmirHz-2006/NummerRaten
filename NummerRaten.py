@@ -8,7 +8,7 @@ class GuessNumberGame:
         self.window.title("Guess the Number Game")
         self.window.geometry("500x430")
         self.window.resizable(False, False)
-        self.color = "#4f5fd5"
+        self.color = "#003C3A"
         self.window.configure(bg = self.color)
 
         # Variablen initialisieren
@@ -68,7 +68,7 @@ class GuessNumberGame:
         # Button zum Anzeigen der Antwort
         show_button = Button(button_frame, text= 'Show Answer!',
                              font=("Arial", 12), command= lambda : self.show_answer(),relief='raised',
-                             bg="#9C27B0", fg="white" , cursor="hand2")
+                             bg="#06B6F1", fg="white" , cursor="hand2")
         show_button.pack(side=LEFT, padx=8)
 
         # Auswahl für Schwierigkeitsgrad
@@ -84,7 +84,7 @@ class GuessNumberGame:
                          ("Hard (1-200)", "schwer")]
 
         for text, mode in difficulties:
-            Radiobutton(difficulty_frame, text=text, variable=self.difficulty, indicatoron=0, selectcolor="#4CAF90",
+            Radiobutton(difficulty_frame, text=text, variable=self.difficulty, indicatoron=0, selectcolor="#4CAF50",
                         value=mode, bg=self.color, fg="white", font=("Arial" , 10 , 'bold'), cursor="hand2",
                         command= lambda : self.change_difficulty()).pack(side=LEFT, padx=4)
             
@@ -132,7 +132,7 @@ class GuessNumberGame:
             self.attempt_text.config(text="📈 Too high! Try a lower number.", fg="red")
         else:
             self.attempt_text.config(text=f"🎉 Congratulations! You guessed the number in {self.attempts} attempts!",
-                                     fg="#4CAF50")
+                                     fg="#17E11E")
             self.input_entry.config(state='disabled')
             self.guess_button .config(state='disabled')
             self.game_controller = False
@@ -143,3 +143,29 @@ class GuessNumberGame:
             self.input_entry.config(state='disabled')
             self.guess_button.config(state='disabled')
             self.game_controller = False
+            
+        # Antwort anzeigen
+    def show_answer(self):
+        if self.game_controller:
+            messagebox.showinfo("The Answer",
+                              f"The number was: {self.number}\n You made {self.attempts} attempts.")
+
+    # Neues Spiel starten
+    def restart_game(self):
+        self.game_controller = True
+        self.number = random.randint(self.min_range, self.max_range)
+        self.attempts  = 0
+        self.attempts_label.config(text=f"Attempts : {self.attempts}/{self.max_attempts}")
+        self.attempt_text.config(text="")
+        self.guess_button .config(state='normal')
+        self.input_entry.config(state='normal')
+        self.input_entry.delete(0, END)
+        self.input_entry.focus()
+
+    # Hauptschleife starten
+    def run(self):
+        self.window.mainloop()
+
+if __name__ == "__main__":
+    game = GuessNumberGame()
+    game.run()
