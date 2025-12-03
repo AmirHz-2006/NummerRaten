@@ -87,3 +87,59 @@ class GuessNumberGame:
             Radiobutton(difficulty_frame, text=text, variable=self.difficulty, indicatoron=0, selectcolor="#4CAF90",
                         value=mode, bg=self.color, fg="white", font=("Arial" , 10 , 'bold'), cursor="hand2",
                         command= lambda : self.change_difficulty()).pack(side=LEFT, padx=4)
+            
+        # Schwierigkeitsgrad ändern
+    def change_difficulty(self):
+        difficulty = self.difficulty.get()
+        if difficulty == "einfach":
+            self.min_range, self.max_range = 1, 50
+            self.max_attempts = 8
+        elif difficulty == "mittel":
+            self.min_range, self.max_range = 1, 100
+            self.max_attempts = 10
+        else:  # schwer
+            self.min_range, self.max_range = 1, 200
+            self.max_attempts = 12
+
+        self.restart_game()
+
+    # Eingabe prüfen und Feedback geben
+    def check_guess(self):
+        if not self.game_controller:
+            return
+
+        guess_text = self.input_entry.get()
+
+        if not guess_text.isdigit():
+            messagebox.showerror("Invalid Input", "Please enter a valid number!")
+            return
+
+        guess = int(guess_text)
+
+        if guess < self.min_range or guess > self.max_range:
+            messagebox.showerror("Invalid Input",
+                               f"Please enter a number between {self.min_range} and {self.max_range}!")
+            return
+
+        self.attempts += 1
+        self.attempts_label.config(text=f"Attempts :{self.attempts}/{self.max_attempts}")
+        # Eingabefeld für nächsten Versuch leeren
+        self.input_entry.delete(0, END)
+
+        if guess < self.number:
+            self.attempt_text.config(text="📉 Too low! Try a higher number.", fg="red")
+        elif guess > self.number:
+            self.attempt_text.config(text="📈 Too high! Try a lower number.", fg="red")
+        else:
+            self.attempt_text.config(text=f"🎉 Congratulations! You guessed the number in {self.attempts} attempts!",
+                                     fg="#4CAF50")
+            self.input_entry.config(state='disabled')
+            self.guess_button .config(state='disabled')
+            self.game_controller = False
+
+        # Prüfen ob maximale Versuche erreicht sind
+        if self.attempts >= self.max_attempts:
+            self.attempt_text.config(text=f"💔 Game over! The number was {self.number}.", fg="red")
+            self.input_entry.config(state='disabled')
+            self.guess_button.config(state='disabled')
+            self.game_controller = False
